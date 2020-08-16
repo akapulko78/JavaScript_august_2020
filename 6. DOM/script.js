@@ -6,6 +6,7 @@ let box = document.getElementById('box'),
     circle = document.getElementsByClassName('circle'),
     // получение элементов по селектору
     heart = document.querySelectorAll('.heart'),
+    // получение первого элемента по селектора
     oneHeart = document.querySelector('.heart'),
     wrapper = document.querySelector('.wrapper');
 
@@ -19,17 +20,21 @@ let box = document.getElementById('box'),
 
 //изменение стилей
 box.style.backgroundColor = 'blue';
-btn[1].style.borderRadius = '100%';
+
+// btn[1].style.borderRadius = '100%';
 
 circle[0].style.backgroundColor = 'red';
 circle[1].style.backgroundColor = 'yellow';
 circle[2].style.backgroundColor = 'green';
 
+// измененеи цвета всех элементов псевдомассива через цикл
+
 // for (let i = 0; i < heart.length; i++) {
 //     heart[i].style.backgroundColor = 'blue';
 // }
 
-// heart.forEach(function (item, i, hearts) {
+// так как прописана коллбэк-функция, она выполниться после функции foreach 
+// heart.forEach(function (item) {
 //     item.style.backgroundColor = 'blue';
 // });
 
@@ -39,29 +44,29 @@ let div = document.createElement('div'),
 
 // добвление класса к элементу
 div.classList.add('black');
-// добавление после элемента:
 
+// добавление в конец блока body:
 // document.body.appendChild(div);
-// wrapper.appendChild(div);  
+wrapper.appendChild(div);  
 
 
 // добавление текста на страницу:
-
+// добавляется заголовок
 // div.innerHTML = '<h1>Hello World!</h1>';
-div.textContent = '<h1>Hello World!</h1>'; // добавляется только текст (безопасность)
 
+// добавляется только текст (для безопасности, если, напрмер, вводит пользователь)
+div.textContent = '<h1>Hello World!</h1>'; 
 // добавление перед элементом:
 
-document.body.insertBefore(div, circle[1]);
+document.body.insertBefore(div, circle[0]);
 
 // удаление:
 
-document.body.removeChild(circle[1]);
-wrapper.removeChild(heart[1]);
+// document.body.removeChild(circle[1]);
+// wrapper.removeChild(heart[1]);
 
-// замена одного элемента другим
-
-document.body.replaceChild(btn[1], circle[1]);
+// // замена одного элемента другим. Элемент, который заменяют, пропадает. 
+// document.body.replaceChild(btn[0], circle[1]);
 
 console.log(div);
 

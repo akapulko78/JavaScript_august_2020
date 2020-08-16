@@ -1,7 +1,9 @@
 "use strict";
 // let num = 20; // глобальная переменная 
 
-// function declaration:
+// function declaration: создается сразу при инициализации кода, поэтому к ней можно обращаться даже в коде,
+// который находиться до места, где она написана. 
+
 // function showFirstMessage(text) {
 //     alert(text);
 //     num = 10; // локальная переменная видна только внутри функции
@@ -68,17 +70,19 @@ function learnJS(lang, callback){
 }
 
 learnJS("JavaScript", function(){
-    console.log("i have done third lesson")
+    console.log("i have done third lesson");
 });
 
 //второй вариант:
+// callback-функция - это функция которая выполняется строго после той, в качестве аргумента которой она выступает
+// function done выполнится строго после function learnJS
 function learnJS(lang, callback){
     console.log("i learn " + lang);
     callback();
 }
 
 function done(){
-    console.log("i have done third lesson")
+    console.log("i have done third lesson");
 }
 
 learnJS("JavaScript", done);
