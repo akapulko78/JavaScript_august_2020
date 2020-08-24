@@ -136,7 +136,7 @@ calculateBtn.addEventListener('click', function () {
     if (isStartBtnClicked == true) {
         // проверка инициализации переменной
         if (appData.budget != undefined) {
-            // суммируем бюджет на месяц и сумму обязате
+            // вычитаем из бюджет на месяц сумму обязательных расходов (ставим перед ними "+", чтобы было число)
             appData.moneyPerDay = ((appData.budget - (+expensesValue.textContent)) / 30).toFixed();
             daybudgetValue.textContent = appData.moneyPerDay;
 
