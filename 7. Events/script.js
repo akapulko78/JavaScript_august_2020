@@ -38,6 +38,7 @@
     link.addEventListener('click', function (event) {
         // отмена стандартного действия на странице (перехода по ссылке)
         event.preventDefault();
+        event.onclick   
         console.log('Произошло событие: ' + event.type + ' на элементе ' + event.target);
     });
 

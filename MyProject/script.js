@@ -3,6 +3,7 @@ let money, time;
 
 // получаем переменную с ID 'start'
 let startButton = document.getElementById('start'),
+    isStartBtnClicked = false,
     // получаем псевдомассив из блоков с тегом 'div', 
     // чей непосредственный родитель имеет тег div с классом 'result-table'
     resultTable = document.querySelectorAll("div.result-table > div"),
@@ -56,6 +57,8 @@ let startButton = document.getElementById('start'),
 startButton.addEventListener('click', function () {
     time = prompt("Введите дату в формате YYYY-MM-DD", '');
     money = +prompt("Ваш бюджет на месяц?", '');
+    // присваиваем переменной, отслеживающей статус нажатия кнопки, значение true
+    isStartBtnClicked = true;
 
     // проверяем что:
     // 1. введены числа, 
@@ -75,65 +78,83 @@ startButton.addEventListener('click', function () {
 });
 
 expensesBtn.addEventListener('click', function () {
-    let sum = 0;
-    for (let i = 0; i < expensesItem.length; i++) {
-        // записываем в переменные введенные пользователем значения
-        // наименование расхода
-        let a = expensesItem[i].value,
-            // цена     
-            b = expensesItem[++i].value;
+    // Проверяем нажата ли кнопка рассчета
+    if (isStartBtnClicked == true) {
+        let sum = 0;
+        for (let i = 0; i < expensesItem.length; i++) {
+            // записываем в переменные введенные пользователем значения
+            // наименование расхода
+            let a = expensesItem[i].value,
+                // цена     
+                b = expensesItem[++i].value;
 
-        // проверяем: 
-        // ввел ли пользователь строку (в случае с prompt это здесь по умолчанию); 
-        // не нажал отмена на окне
-        // не оставил пустую строку
-        // не ввел ответ на первый вопрос длиннее 50 символов
-        if ((typeof (a)) === 'string' && (typeof (a) != null) && (typeof (b)) === 'string' && (typeof (b) != null) &&
-            a != '' && b != '' && a.length < 50) {
-            console.log('done');
-            // записываем в объект expenses введенные пользователем значения, где а - ключ, в - значение
-            appData.expenses[a] = b;
-            // на каждой итерации цикла в переменную sum записывается число из введенной строки 
-            sum += +b;
-            // это аналог записи appData.expenses.a = b; Но здесь мы его использовать не можем
-        } else {
-            i = i - 1;
+            // проверяем: 
+            // ввел ли пользователь строку (в случае с prompt это здесь по умолчанию); 
+            // не нажал отмена на окне
+            // не оставил пустую строку
+            // не ввел ответ на первый вопрос длиннее 50 символов
+            if ((typeof (a)) === 'string' && (typeof (a) != null) && (typeof (b)) === 'string' && (typeof (b) != null) &&
+                a != '' && b != '' && a.length < 50) {
+                console.log('done');
+                // записываем в объект expenses введенные пользователем значения, где а - ключ, в - значение
+                appData.expenses[a] = b;
+                // на каждой итерации цикла в переменную sum записывается число из введенной строки 
+                sum += +b;
+                // это аналог записи appData.expenses.a = b; Но здесь мы его использовать не можем
+            } else {
+                i = i - 1;
+            }
         }
+        expensesValue.textContent = sum;
+    } else {
+        console.log('не нажата кнопка старта');
+        return;
     }
-    expensesValue.textContent = sum;
+
 });
 
 optionalExpBtn.addEventListener('click', function () {
-    for (let i = 0; i < optionalExpensesItem.length; i++) {
-        let optExp = optionalExpensesItem[i].value;
-        appData.optionalExpenses[i] = optExp;
-        optionalexpensesValue.textContent += appData.optionalExpenses[i] + ' ';
-        // if ((typeof (optExp)) === 'string' && (typeof (optExp) != null) && optExp != '' && optExp.length < 50) {
-        //     console.log('done');
+    if (isStartBtnClicked == true) {
+        for (let i = 0; i < optionalExpensesItem.length; i++) {
+            let optExp = optionalExpensesItem[i].value;
+            appData.optionalExpenses[i] = optExp;
+            optionalexpensesValue.textContent += appData.optionalExpenses[i] + ' ';
+            // if ((typeof (optExp)) === 'string' && (typeof (optExp) != null) && optExp != '' && optExp.length < 50) {
+            //     console.log('done');
 
-        // } else {
-        //     i = i - 1;
-        // }
+            // } else {
+            //     i = i - 1;
+            // }
+        }
+    } else {
+        console.log('не нажата кнопка старта');
+        return;
     }
 });
 
 calculateBtn.addEventListener('click', function () {
-    // проверка инициализации переменной
-    if (appData.budget != undefined) {
-        appData.moneyPerDay = (appData.budget / 30).toFixed();
-        daybudgetValue.textContent = appData.moneyPerDay;
+    if (isStartBtnClicked == true) {
+        // проверка инициализации переменной
+        if (appData.budget != undefined) {
+            // суммируем бюджет на месяц и сумму обязате
+            appData.moneyPerDay = ((appData.budget - (+expensesValue.textContent)) / 30).toFixed();
+            daybudgetValue.textContent = appData.moneyPerDay;
 
-        if (appData.moneyPerDay < 100) {
-            levelValue.textContent = "Минимальный уровень достатка";
-        } else if (appData.moneyPerDay > 100 && appData.moneyPerDay < 2000) {
-            levelValue.textContent = "Средний уровень достатка";
-        } else if (appData.moneyPerDay > 2000) {
-            levelValue.textContent = "Высокий уровень достатка";
+            if (appData.moneyPerDay < 100) {
+                levelValue.textContent = "Минимальный уровень достатка";
+            } else if (appData.moneyPerDay > 100 && appData.moneyPerDay < 2000) {
+                levelValue.textContent = "Средний уровень достатка";
+            } else if (appData.moneyPerDay > 2000) {
+                levelValue.textContent = "Высокий уровень достатка";
+            } else {
+                levelValue.textContent = "Произошла ошибка";
+            }
         } else {
-            levelValue.textContent = "Произошла ошибка";
+            daybudgetValue.textContent = 'Произошла ошибка';
         }
     } else {
-        daybudgetValue.textContent = 'Произошла ошибка';
+        console.log('не нажата кнопка старта');
+        return;
     }
 });
 
@@ -198,4 +219,3 @@ let appData = {
 
 //     // в массив income записываются все ответы (items) через запятую и пробел
 //     appData.income = items.split(', ');
-
