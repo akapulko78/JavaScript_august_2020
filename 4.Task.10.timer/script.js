@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
     // дата до которой устанавливается таймер 
-    let deadline = '2020-09-02';
+    let deadline = '2020-09-04';
 
     function gettimeRemaining(endtime) {
         // получение разницы между дедлайном (endtime) и текущим временем в миллисекундах
@@ -63,7 +63,8 @@ window.addEventListener('DOMContentLoaded', function () {
             // получение секунд в целых числах (Math.floor())
             seconds = Math.floor((t / 1000) % 60),
             minutes = Math.floor((t / 1000 / 60) % 60),
-            hours = Math.floor(t / 1000 / 60 / 24);
+            // вычитаем 3 часаб так как Date.parse() оперирует часовым поясом GMT + 0
+            hours = Math.floor((t / 1000 / 60 / 60) - 3);
         // возварщаем объект содержащий все переменные
         return {
             'total': t,
@@ -89,9 +90,9 @@ window.addEventListener('DOMContentLoaded', function () {
             // которой присваивается объект из функции gettimeRemaining.  
             let t = gettimeRemaining(endtime);
             // получаем обнрвленные данные по часам, минутам и секундам из объекта и записываем в верстку
-            hours.textContent = t.hours;
-            minutes.textContent = t.minutes;
-            seconds.textContent = t.seconds;
+            hours.textContent = t.hours < 10 ? '0' + t.hours : t.hours;
+            minutes.textContent = t.minutes < 10 ? '0' + t.minutes : t.minutes;
+            seconds.textContent = t.seconds < 10 ? '0' + t.seconds : t.seconds;
             // как только разница между текущим временем и запланиванным достигнет нуля:
             if (t.total <= 0) {
                 // останавливаем таймер. Переменной timeInterval присваивался интервал запуска функции выше 
