@@ -1,10 +1,3 @@
-// let first = document.getElementById('firstInt'),
-//     second = document.getElementById('secondInt'),
-//     multBtn = document.getElementById('multiButton'),
-//     sumBtn = document.getElementById('sumButton'),
-//     res = document.getElementsByClassName('budget-value');
-
-//     alert('Введите 2 целых числа в поля');
 
 function Calculator() {
 
