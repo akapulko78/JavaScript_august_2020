@@ -59,10 +59,10 @@
 // this
 // // 1) Простой вызов функции: this == window или undefined 
 // function showThis(a, b) {
-//     console.log(this);
+//     console.log(this); // window
 
 //     function sum() {
-//         console.log(this);
+//         console.log(this); // window
 //         // замыкание функции: программа не находит a и b в функции sum и поднимается выше к showThis 
 //         return a + b;
 //     }
@@ -76,9 +76,9 @@
 //     a: 20,
 //     b: 15,
 //     sum: function () {
-//         console.log(this);
+//         console.log(this); //a: 20, b: 15, sum: ƒ ()
 //         function shout (){
-//             console.log(this);
+//             console.log(this); // window
 //         }
 //         // не имеет контекста, так как ввызвана как обычная функция, а не метод
 //         shout();
@@ -116,7 +116,17 @@
 
 let btn = document.querySelector('button');
 // контекстом вызова будет элемент, на котором происходит событие
-btn.addEventListener('click', function() {
+btn.addEventListener('click', function () {
     console.log(this);
     this.style.backgroundColor = 'red';
 });
+
+let age = document.getElementById('age');
+
+function showUser(surname, name) {
+    this.value = age.value;
+    this.surname = surname;
+    this.name = name;
+    alert("Пользователь " + surname + " " + name + ", его возраст " + this.value);
+}
+let user = new showUser('Daniil', 'Gavrilov');

@@ -7,6 +7,7 @@ window.addEventListener('DOMContentLoaded', function () {
     let tab = document.querySelectorAll('.info-header-tab'),
         // получаем родителя табов (для делегирования события)
         info = document.querySelector('.info-header'),
+
         // получаем контент табов
         tabContent = document.querySelectorAll('.info-tabcontent');
 
@@ -55,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
     // дата до которой устанавливается таймер 
-    let deadline = '2020-09-04';
+    let deadline = '2020-09-15';
 
     function gettimeRemaining(endtime) {
         // получение разницы между дедлайном (endtime) и текущим временем в миллисекундах
@@ -102,4 +103,64 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     setClock('timer', deadline);
+
+    // Modal
+    let more = document.querySelector('.more'),
+        overlay = document.querySelector('.overlay'),
+        close = document.querySelector('.popup-close'),
+        toKnow = document.querySelectorAll('.description-btn'),
+        // получаем общего родителя
+        infoAll = document.querySelector('.info'),
+        isModOnDisp = false;
+
+
+
+    function showModal() {
+        if (isModOnDisp == false) {
+            overlay.style.display = 'block';
+            // обращаемся к кнопке, которую нажали - добавляем анимацию
+            more.classList.add('more-splash');
+            // запрет на листание страницы пока открыто модальное окно  
+            document.body.style.overflow = 'hidden';
+            isModOnDisp = true;
+        } else {
+            overlay.style.display = 'none';
+            // // обращаемся к кнопке, которую нажали - убираем анимацию
+            more.classList.remove('more-splash');
+            // // отменяем запрет на прокрутку страницы
+            document.body.style.overflow = '';
+            isModOnDisp = false;
+        }
+    }
+
+    // обработка события нажатия на кнопке "Узнать подробнее"
+    infoAll.addEventListener('click', function(event){
+        // получаем самый глубокий элемент, на котором произошло событие
+        let target = event.target;
+        // проверяем, было ли событие и содержит ли самый глубокий элемент события класс description-btn
+        if(target && target.classList.contains('description-btn')){
+            showModal();
+        }
+    });
+
+    // обработка события нажатия на кнопке "Узнать Больше"
+
+    more.addEventListener('click', function () {
+        showModal();
+        // overlay.style.display = 'block';
+        // // обращаемся к кнопке, которую нажали - добавляем анимацию
+        // this.classList.add('more-splash');
+        // // запрет на листание страницы пока открыто модальное окно  
+        // document.body.style.overflow = 'hidden';
+    });
+
+    // обработка события нажатия на кнопке закрытия всплывающего окна
+    close.addEventListener('click', function () {
+        showModal();
+        // overlay.style.display = 'none';
+        // // обращаемся к кнопке, которую нажали - убираем анимацию
+        // more.classList.remove('more-splash');
+        // // отменяем запрет на прокрутку страницы
+        // document.body.style.overflow = '';
+    });
 });
