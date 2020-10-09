@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
     // дата до которой устанавливается таймер 
-    let deadline = '2020-10-03';
+    let deadline = '2020-10-12';
 
     function gettimeRemaining(endtime) {
         // получение разницы между дедлайном (endtime) и текущим временем в миллисекундах
@@ -137,11 +137,11 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     // обработка события нажатия на кнопке "Узнать подробнее"
-    infoAll.addEventListener('click', function(event){
+    infoAll.addEventListener('click', function (event) {
         // получаем самый глубокий элемент, на котором произошло событие
         let target = event.target;
         // проверяем, было ли событие и содержит ли самый глубокий элемент события класс description-btn
-        if(target && target.classList.contains('description-btn')){
+        if (target && target.classList.contains('description-btn')) {
             showModal();
         }
     });
@@ -160,10 +160,116 @@ window.addEventListener('DOMContentLoaded', function () {
     // обработка события нажатия на кнопке закрытия всплывающего окна
     close.addEventListener('click', function () {
         showModal();
+        statusMessage.innerHTML = '';
         // overlay.style.display = 'none';
         // // обращаемся к кнопке, которую нажали - убираем анимацию
         // more.classList.remove('more-splash');
         // // отменяем запрет на прокрутку страницы
         // document.body.style.overflow = '';
     });
+
+    // Form
+    let message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+    // создание переменной для заполняемой формы
+    let form = document.querySelector('.main-form'),
+        footerForm = document.getElementById('form'),
+        // создание переменной для поля ввода    
+        input = document.getElementsByTagName('input'),
+        // создание дива для уведомления о статусе
+        statusMessage = document.createElement('div');
+    // добавление класса к дива
+    statusMessage.classList.add('.popup-form__label');
+
+
+
+
+    // отслеживание события отправки формы на сервер (submit)
+    form.addEventListener('submit', function (event) {
+        // отмена стандартного действия на странице: перезагрузка при отправке формы
+        event.preventDefault();
+        // добавдение к форме нового дива
+        form.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        // // отпрвака данных на сервер в формате JSON
+        // request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); 
+
+        // получение данных введенных в input пользоватеем
+        // для получения formData из HTML надо чтобы элемент input имел атрибут name
+        let formData = new FormData(form);
+        // // для JSON:
+        // создаем пустой объект для последующего наполнения его данными из formData 
+        // let obj = {};
+        // помещаем данные (ключ и значение) из объекта formData в obj
+        // formData.forEach(function(value, key){
+        //     obj[key] = value;
+        // });
+        // переводим полученный объект в формат JSON
+        //    let json = JSON.stringify(obj);
+
+
+
+        // отправка запроса на сервер. formData - это body 
+        request.send(formData);
+        //request.send(json);
+
+        // добавление обработчика события к запросу
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                // добавляем заголовок к диву, взятый из объекта message 
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState === 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+        // очистка всех input после отправки формы 
+        for (let i = 0; i < input.length; i++) {
+            input[i].value = '';
+        }
+
+    });
+
+    footerForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        footerForm.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        let formData = new FormData(footerForm);
+
+        let obj = {};
+        formData.forEach(function (value, key) {
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+
+        request.send(json);
+
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState === 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+        for (let i = 0; i < input.length; i++) {
+            input[i].value = '';
+        }
+
+    });
+
+
+
 });
