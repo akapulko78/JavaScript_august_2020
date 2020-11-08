@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Timer
     // дата до которой устанавливается таймер 
-    let deadline = '2020-10-12';
+    let deadline = '2020-11-25';
 
     function gettimeRemaining(endtime) {
         // получение разницы между дедлайном (endtime) и текущим временем в миллисекундах
@@ -184,92 +184,227 @@ window.addEventListener('DOMContentLoaded', function () {
     // добавление класса к дива
     statusMessage.classList.add('.popup-form__label');
 
+    // функция для отслеживания события отправки формы на сервер (submit) БЕЗ ПРОМИСОВ
+    function sendForm(elem) {
+        elem.addEventListener('submit', function (event) {
+            // отмена стандартного действия на странице: перезагрузка при отправке формы
+            event.preventDefault();
+            // добавдение к форме нового дива
+            form.appendChild(statusMessage);
 
+            let request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            // // отпрвака данных на сервер в формате JSON
+            // request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); 
 
+            // получение данных введенных в input пользоватеем
+            // для получения formData из HTML надо чтобы элемент input имел атрибут name
+            let formData = new FormData(elem);
+            // // для JSON:
+            // создаем пустой объект для последующего наполнения его данными из formData 
+            // let obj = {};
+            // помещаем данные (ключ и значение) из объекта formData в obj
+            // formData.forEach(function(value, key){
+            //     obj[key] = value;
+            // });
+            // переводим полученный объект в формат JSON
+            //    let json = JSON.stringify(obj);
 
-    // отслеживание события отправки формы на сервер (submit)
-    form.addEventListener('submit', function (event) {
-        // отмена стандартного действия на странице: перезагрузка при отправке формы
-        event.preventDefault();
-        // добавдение к форме нового дива
-        form.appendChild(statusMessage);
+            // отправка запроса на сервер. formData - это body 
+            request.send(formData);
+            //request.send(json);
 
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        // // отпрвака данных на сервер в формате JSON
-        // request.setRequestHeader('Content-type', 'application/json; charset=utf-8'); 
-
-        // получение данных введенных в input пользоватеем
-        // для получения formData из HTML надо чтобы элемент input имел атрибут name
-        let formData = new FormData(form);
-        // // для JSON:
-        // создаем пустой объект для последующего наполнения его данными из formData 
-        // let obj = {};
-        // помещаем данные (ключ и значение) из объекта formData в obj
-        // formData.forEach(function(value, key){
-        //     obj[key] = value;
-        // });
-        // переводим полученный объект в формат JSON
-        //    let json = JSON.stringify(obj);
-
-
-
-        // отправка запроса на сервер. formData - это body 
-        request.send(formData);
-        //request.send(json);
-
-        // добавление обработчика события к запросу
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                // добавляем заголовок к диву, взятый из объекта message 
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
+            // добавление обработчика события к запросу
+            request.addEventListener('readystatechange', function () {
+                if (request.readyState < 4) {
+                    // добавляем заголовок к диву, взятый из объекта message 
+                    statusMessage.innerHTML = message.loading;
+                } else if (request.readyState === 4 && request.status == 200) {
+                    statusMessage.innerHTML = message.success;
+                } else {
+                    statusMessage.innerHTML = message.failure;
+                }
+            });
+            // очистка всех input после отправки формы 
+            for (let i = 0; i < input.length; i++) {
+                input[i].value = '';
             }
         });
-        // очистка всех input после отправки формы 
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        }
+    }
 
+    sendForm(footerForm);
+    sendForm(form);
+
+    // Slider 
+    // параметр текущего слайда
+    let slideIndex = 1,
+        slides = document.querySelectorAll('.slider-item'),
+        prev = document.querySelector('.prev'),
+        next = document.querySelector('.next'),
+        dotsWrap = document.querySelector('.slider-dots'),
+        dots = document.querySelectorAll('.dot');
+
+    showSlides(slideIndex);
+
+    function showSlides(n) {
+        // если счетчик больше кол-ва слайдов
+        if (n > slides.length) {
+            // возвращаем к первому слайду
+            slideIndex = 1;
+        }
+        // если счетчик меньше чем первый слайд
+        if (n < 1) {
+            // возвращаем к последнему файлу
+            slideIndex = slides.length;
+        }
+        // перебор слайдов и их скрытие
+        slides.forEach((item) => item.style.display = 'none');
+
+        // аналог записи цикла 
+        // for (let i = 0; i < slides.length; i++) {
+        //     slides[i].style.display = 'none';
+        // }
+        // скрываем отображение всех точек
+        dots.forEach((item) => item.classList.remove('dot-active'));
+
+        // отображаем нужный слайд и точку под ним
+        slides[slideIndex - 1].style.display = 'block';
+        dots[slideIndex - 1].classList.add('dot-active');
+    }
+    // функция для изменения индекса слайда
+    function plusSlides(n) {
+        // вызывается функция отображения слайда с индексом на 1 больше, чем текущий
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        // при клике на точку, ее индекс передается сюда и отображатеся слайд с этим индексом
+        showSlides(slideIndex = n);
+    }
+
+    prev.addEventListener('click', function () {
+        // при клике назад вызывается функция с индексом -1 и передает его в функцию, 
+        // отображающую предыдущий слайд
+        plusSlides(-1);
     });
 
-    footerForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        footerForm.appendChild(statusMessage);
+    next.addEventListener('click', function () {
+        plusSlides(1);
+    });
 
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-        let formData = new FormData(footerForm);
-
-        let obj = {};
-        formData.forEach(function (value, key) {
-            obj[key] = value;
-        });
-        let json = JSON.stringify(obj);
-
-        request.send(json);
-
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState === 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
+    // делегирование 
+    dotsWrap.addEventListener('click', function (event) {
+        for (let i = 0; i < dots.length + 1; i++) {
+            // проверяем наличие класса dot у элемента, на который мы кликнули, и номер нажатой точки
+            // если мы нажимаем на первую точку, цикл доходит до i = 1 и только тогда выполняется условие
+            // если мы нажимаем на четвртую точку, цикл доходит до i = 4 (dots.length + 1) 
+            // и только тогда выполняется условие
+            if (event.target.classList.contains('dot') && event.target == dots[i - 1]) {
+                currentSlide(i);
             }
-        });
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
         }
-
     });
 
+    // calc 
+
+    let persons = document.querySelectorAll('.counter-block-input')[0],
+        restDays = document.querySelectorAll('.counter-block-input')[1],
+        place = document.getElementById('select'),
+        totalValue = document.getElementById('total'),
+        personsSum = 0,
+        daysSum = 0,
+        total = 0;
+
+    totalValue.innerHTML = 0;
+
+    // обработчик ввода в поле "кол-во людей"
+    persons.addEventListener('change', function () {
+        // получаем числовое выражение значения (value), вводимого в поле (persons), и записываем в personsSum
+        personsSum = +this.value;
+        total = (daysSum + personsSum) * 4000;
+
+        // если второе поле пустое, totalValue не меняется
+        if (restDays.value == '' || persons.value == '') {
+            totalValue.innerHTML = 0;
+        } else {
+            totalValue.innerHTML = total;
+        }
+    });
+
+    restDays.addEventListener('change', function () {
+        // получаем числовое выражение значения (value), вводимого в поле (persons), и записываем в personsSum
+        daysSum = +this.value;
+        total = (daysSum + personsSum) * 4000;
+
+        // если второе поле пустое, totalValue не меняется
+        if (persons.value == '' || restDays.value == '') {
+            totalValue.innerHTML = 0;
+        } else {
+            totalValue.innerHTML = total;
+        }
+    });
+
+    // обработчик выбора места поездки (place)
+    place.addEventListener('change', function () {
+        // если хотя бы одно из полей пустое, сумма не будет меняться 
+        if (restDays.value == '' || persons.value == '') {
+            totalValue.innerHTML = 0;
+        } else {
+            // создаем временную переменную для текущего total из предыдущей функции
+            let a = total;
+            // получение атрибута value у выбранного места (place), умножение его на текущий total (a) 
+            // и присвоение его к результату 
+            totalValue.innerHTML = a * this.options[this.selectedIndex].value;
+        }
+    });
 
 
 });
+
+
+// // функция для отслеживания события отправки формы на сервер (submit) C ПРОМИСАМИ
+// function sendForm(elem) {
+//     elem.addEventListener('submit', function (event) {
+//         // отмена стандартного действия на странице: перезагрузка при отправке формы
+//         event.preventDefault();
+//         // добавдение к форме нового дива
+//         form.appendChild(statusMessage);
+//         let formData = new FormData(elem);
+
+//         function postData(data) {
+//             return new Promise(function (resolve, reject) {
+//                 let request = new XMLHttpRequest();
+//                 request.open('POST', 'server.php');
+//                 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+//                 request.onreadystatechange = function () {
+//                     if (request.readyState < 4) {
+//                         resolve();
+
+//                     } else if (request.readyState === 4 && request.status == 200) {
+//                         resolve();
+//                     } else {
+//                         reject();
+//                     }
+//                 };
+//                 request.send(data);
+//             });
+//         }
+
+//         function clearInput() {
+//             for (let i = 0; i < input.length; i++) {
+//                 input[i].value = '';
+//             }
+//         }
+
+//         postData(formData)
+//             .then(() => statusMessage.innerHTML = message.loading)
+//             .then(() => {
+//                 statusMessage.innerHTML = '';
+//             })
+//             .catch(() => statusMessage.innerHTML = message.failure)
+//             .then(clearInput);
+
+//     });
+// }
